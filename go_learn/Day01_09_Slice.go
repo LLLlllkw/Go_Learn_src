@@ -59,15 +59,24 @@ func main() {
 	fmt.Println("arr1", arr1, "arr2", arr2)
 
 	// slice对象在传参时是会复制一份，也就是go里面全是传值
+	// slice 在make或者赋值后，返回的是一个结构体，所以在函数参数传递时，会把这个结构体复制一份
 	arr3 := []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
 	arr4 := arr3[3:5]
-	add2(&arr4, 0)
+	fmt.Printf("%p\n", arr4)  // 单独打印slice的地址，输出的是slice 这个 struct 中 ptr 指向的数组的地址
+	fmt.Printf("%p\n", &arr4) // 该结构体地址
+	add2(&arr4, 0)            // 传地址，把指向这个地址的指针传递到了add2这个func
+	add_struct(arr4)
 	fmt.Println(arr4)
 	add2(&arr4, 1)
 	fmt.Println(arr4)
 }
 func add2(sli *[]int, num int) {
-	*sli = append(*sli, num)
-	fmt.Println(*sli)
-	l := new(*[]int)
+	// *sli = append(*sli, num)
+	fmt.Printf("sli %p\n", sli)   // sli 指针指向的地址，依然是原本的arr4 slice
+	fmt.Printf("*sli %p\n", *sli) // 被复制了一份的指针的地址，是新的指针。但依然指向原slice结构体对象
+	// l := new(*[]int)
+}
+
+func add_struct(sli []int) {
+	fmt.Printf("struct %p\n", &sli) // 把结构体复制了一份，所以这里可以看到指针的值已经变了
 }

@@ -35,7 +35,7 @@ func main() {
 	}
 	// 6. Map 不能用 == 号去比较，只能和nil 比较  https://segmentfault.com/q/1010000019940462 回答中说map可以比较是错的，其他的可以看
 	// 7. Map 在函数传参的时候, 可以直接传值而不需要使用指针
-	//    原因是
+	//    原因是make时其实返回的是map的地址
 	fmt.Println("Map1", Map1)
 	AddNewItem(Map1, 3, "huhu")
 	fmt.Println("Map1", Map1)
