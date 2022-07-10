@@ -1,24 +1,22 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
-type MyStr struct {
-	name string
-	id   int
+type test struct {
+	a int
+	b int
 }
-type MyMap map[string]MyStr
+
+func (t test) func_test() {
+	if t.c == 1 {
+		fmt.Println("a = 1")
+	}
+	return
+}
 
 func main() {
-
-	a := make(map[string]MyStr)
-	fmt.Printf("%p\n", a)
-
-	ReadMap(&a)
-
-	// var TestMap map[string]func() MyStr = map[string]func() MyStr{}
-
-}
-
-func ReadMap(Map *map[string]MyStr) {
-	fmt.Printf("%p\n", Map)
+	a := test{a: 1, b: 2}
+	a.func_test()
 }
