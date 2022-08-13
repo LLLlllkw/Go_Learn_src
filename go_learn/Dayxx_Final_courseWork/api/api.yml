@@ -1,0 +1,423 @@
+swagger: '2.0'
+info:
+  description: '开放 API, 主要用于获取连线相关的信息'
+  version: 1.0.0
+  title: Swagger Session
+  contact:
+    name: zhanghaojie
+    email: zhanghaojie@iyunxiao.com
+externalDocs:
+  description: Find out more about Swagger
+  url: 'http://swagger.io'
+basePath: /v1/session
+tags:
+  - name:  session
+    description: '连线信息'
+schemes:
+  - http
+host: testhfsfd-sessions.haofenshu.com
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /playbackInfos:
+    post:
+      tags:
+        - session
+      summary: '批量获取回放信息'
+      description: '如果请求内容中包含不存在的连线 ID, 响应中不会包含此 ID 的任何信息'
+      operationId: getPlaybackInfosBySessionIds
+      parameters:
+        - name: sessionIds
+          description: '连线 ID 的数组'
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SessionIds'
+      responses:
+        '201':
+          description: '请求成功'
+          schema:
+            type: object
+            properties:
+              result:
+                type: string
+                description: '结果情况, success 代表成功, 其他 代表失败'
+                enum:
+                  - success
+                  - fail
+                example:
+                  "success"
+              msg:
+                type: string
+                description: '对结果的描述'
+                example:
+                  "获取成功"
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/PlaybackInfo'
+        '500':
+          $ref: '#/responses/Standard500ErrorResponse'
+  /{sessionId}/playbackStatus/regeneration:
+    put:
+      tags:
+        - session
+      summary: '重新生成回放'
+      description: '重新生成回放'
+      operationId: setPlaybackStatusToRegeneration
+      parameters:
+        - name: sessionId
+          description: '连线 ID'
+          required: true
+          in: path
+          type: string
+      responses:
+        '201':
+          description: '请求成功'
+          schema:
+            type: object
+            properties:
+              result:
+                type: string
+                description: '结果情况, success 代表成功, 其他情况 代表失败'
+                enum:
+                  - success
+                  - sessionNoFound
+                  - repeatSubmit
+                  - generating
+                example:
+                  "success"
+              msg:
+                type: string
+                example:
+                  "重新生成成功"
+        '500':
+          $ref: '#/responses/Standard500ErrorResponse'
+  /playbackStatuses:
+    post:
+      tags:
+        - session
+      summary: '批量获取回放状态信息'
+      description: '如果请求内容中包含不存在的连线 ID, 响应中不会包含此 ID 的任何信息'
+      operationId: getPlaybackStatusesBySessionIds
+      parameters:
+        - name: sessionIds
+          description: '连线 ID 的数组'
+          in: body
+          schema:
+            $ref: '#/definitions/SessionIds'
+      responses:
+        '201':
+          description: '请求成功'
+          schema:
+            type: object
+            properties:
+              result:
+                type: string
+                description: '结果情况, success 代表成功, 其他 代表失败'
+                enum:
+                  - success
+                  - fail
+                example:
+                  "success"
+              msg:
+                type: string
+                description: '对结果的描述'
+                example:
+                  "获取成功"
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/PlaybackStatus'
+        '500':
+          $ref: '#/responses/Standard500ErrorResponse'
+  /teachers/{teacherStatus}:
+    get:
+      tags:
+        - session
+      summary: '获取不同状态下所有的老师'
+      operationId: getAllTeachersByStatus
+      description: 'online 包含 inClass 中的老师'
+      parameters:
+        - name: teacherStatus
+          description: 'online 表示在线的老师, inClass 表示连线中的老师'
+          in: path
+          required: true
+          type: string
+          enum:
+            - online
+            - inClass
+      responses:
+        '200':
+          description: '请求成功'
+          schema:
+            type: object
+            properties:
+              result:
+                type: string
+                description: '结果情况, success 代表成功, 其他 代表失败'
+                enum:
+                  - success
+                  - fail
+                example:
+                  "success"
+              msg:
+                type: string
+                description: '对结果的描述'
+                example:
+                  "获取成功"
+              data:
+                type: array
+                items:
+                  type: string
+        '500':
+          $ref: '#/responses/Standard500ErrorResponse'
+  /sessionInfosByRange:
+    get:
+      tags:
+        - session
+      summary: '同步课堂信息, 通过传入 连线 开始时间的时间区间'
+      operationId: getSessionInfosByRange
+      parameters:
+        - name: start
+          in: query
+          required: true
+          description: '连线 开始时间的起始时间戳(unix 时间戳(毫秒))'
+          type: integer
+          format: int64
+        - name: end
+          in: query
+          required: true
+          description: '连线 开始时间的截止时间戳(unix 时间戳(毫秒))'
+          type: integer
+          format: int64
+      responses:
+        '201':
+          description: '请求成功'
+          schema:
+            type: object
+            properties:
+              result:
+                type: string
+                description: '结果情况, success 代表成功, 其他 代表失败'
+                enum:
+                  - success
+                  - fail
+              msg:
+                type: string
+                description: '对结果的描述'
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/SessionInfo'
+        '500':
+          $ref: '#/responses/Standard500ErrorResponse'
+  /sessionInfosBySessionIds:
+    post:
+      tags:
+        - session
+      summary: '批量查询连线信息'
+      description: '如果请求内容中包含不存在的连线 ID, 响应中不会包含此 ID 的任何信息'
+      operationId: getSessionInfoBySessionIds
+      parameters:
+        - name: sessionIds
+          description: SessionId's array
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SessionIds'
+      responses:
+        '201':
+          description: '请求成功'
+          schema:
+            type: object
+            properties:
+              result:
+                type: string
+                description: '结果情况, success 代表成功, 其他 代表失败'
+                enum:
+                  - success
+                  - fail
+              msg:
+                type: string
+                description: '对结果的描述'
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/SessionInfo'
+        '500':
+          $ref: '#/responses/Standard500ErrorResponse'
+definitions:
+  PlaybackStatus:
+    type: object
+    required:
+      - sessionId
+      - status
+    properties:
+      sessionId:
+        type: string
+        description: '数据库 session 表中的 session 字段'
+        example:
+          "7210000"
+      status:
+        type: string
+        description: '
+        回放状态信息: <br>
+          playbackNotGenerated 回放还未生成, 包括需要重新生成, 还未生成 <br>
+          sessionNotExist 课程不存在 <br>
+          sessionNotFinish 课程正在上课 <br>
+          playbackFailedGenerated 回放生成失败, 包括只有语音、只有画图等各种错误情况 <br>
+          playbackSuccessGenerated 回放生成成功'
+        default: sessionNotExist
+        enum:
+          - sessionNotExist
+          - sessionNotFinish
+          - playbackNotGenerated
+          - playbackFailedGenerated
+          - playbackSuccessGenerated
+        example:
+          "playbackSuccessGenerated"
+  PlaybackInfo:
+    type: object
+    required:
+      - sessionId
+    properties:
+      sessionId:
+        type: string
+        description: '回放视频 ID'
+        example:
+          "7210000"
+      status:
+        type: string
+        description: '
+        回放状态信息: <br>
+          sessionNotExist 课程不存在 <br>
+          sessionNotFinish 课程正在上课 <br>
+          playbackNotGenerated 回放还未生成, 包括需要重新生成, 还未生成 <br>
+          playbackFailedGenerated 回放生成失败, 包括音频错误等各种错误情况 <br>
+          playbackSuccessGenerated 回放生成成功, 存在下载地址, 视频大小 <br>
+          playbackNotVideo 老回放, 只有视频地址 没有下载地址'
+        default: sessionNotExist
+        enum:
+          - sessionNotExist
+          - sessionNotFinish
+          - playbackNotGenerated
+          - playbackFailedGenerated
+          - playbackSuccessGenerated
+          - playbackNotVideo
+        example:
+          "playbackSuccessGenerated"
+      videoUrl:
+        type: string
+        description: '新回放的下载地址'
+        example:
+          "http://yx-fudao.ks3-cn-beijing.ksyun.com/testreplayer_data/7210000/7210000.mp4?Expires=1548152332&AWSAccessKeyId=AKLT6GLT4mf1RoiAY5DCcsd_3Q&Signature=zXSJNkX9C3ovtmPYwF3Y2fNcXdY%3D"
+      videoSize:
+        type: integer
+        format: int64
+        default: -1
+        description: '新回放的文件大小(单位: byte)'
+        example:
+          1026323
+      expire:
+        type: integer
+        format: int64
+        description: '新回放下载地址的过期时间(unix 时间戳(毫秒))'
+        example:
+          1548507047292
+      webUrl:
+        type: string
+        description: '旧回放的直接播放地址'
+        example:
+          "testhfsfd-replayer.haofenshu.com/entry?sid=7210000"
+  SessionInfo:
+    type: object
+    required:
+      - sessionId
+    properties:
+      sessionId:
+        type: string
+        description: '数据库 session 表中的 session 字段'
+        example:
+          "7210000"
+      teacher:
+        type: string
+        description: '老师的用户名'
+        example:
+          "muyi"
+      student:
+        type: string
+        description: '学生的用户名'
+        example:
+          "test014"
+      status:
+        type: string
+        description: '
+        回放状态信息: <br>
+          playbackNotGenerated 回放还未生成, 包括需要重新生成, 还未生成 <br>
+          sessionNotExist 课程不存在 <br>
+          sessionNotFinish 课程正在上课 <br>
+          playbackFailedGenerated 回放生成失败, 包括只有语音、只有画图等各种错误情况 <br>
+          playbackSuccessGenerated 回放生成成功'
+        default: sessionNotExist
+        enum:
+          - sessionNotExist
+          - sessionNotFinish
+          - playbackNotGenerated
+          - playbackFailedGenerated
+          - playbackSuccessGenerated
+        example:
+          "playbackSuccessGenerated"
+      classType:
+        type: string
+        description: '课程类型, UnFormal 代表非正式课, Formal 代表正式课'
+        enum:
+          - UnFormal
+          - Formal
+        example:
+          "Formal"
+      startTime:
+        type: integer
+        format: int64
+        description: '课程开始时间(unix 时间戳(毫秒))'
+        example:
+          1548085855
+      endTime:
+        type: integer
+        format: int64
+        description: '课程结束时间(unix 时间戳(毫秒))'
+        example:
+          1548067573
+  SessionIds:
+    type: object
+    description: '连线 ID 的数组'
+    required:
+      - sessionIds
+    properties:
+      sessionIds:
+        type: array
+        uniqueItems: true
+        minItems: 1
+        items:
+          type: string
+          minLength: 1
+          example:
+            "7210000"
+        example:
+          ["7210000","7210001","7210002","7210003","7210004","7210005"]
+  Error:
+    type: object
+    required:
+      - message
+    properties:
+      message:
+        type: string
+        example:
+          "database error"
+responses:
+  Standard500ErrorResponse:
+    description: '服务器内部异常'
+    schema:
+      $ref: '#/definitions/Error'

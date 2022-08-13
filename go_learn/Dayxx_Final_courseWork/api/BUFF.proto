@@ -1,0 +1,22 @@
+syntax = "proto3";
+package BUFF;
+
+service BUFF {
+    rpc GetBUFFItemPrice(ItemRequest) returns (PriceData);
+}
+
+
+message ItemRequest{
+    Date Date = 1;
+}
+
+message Date{
+    int32 Year = 1;
+    bytes Month = 2;
+    int32 Day = 3;
+}
+
+message PriceData{
+    int32 Price = 1;
+    string Date = 2;
+}
